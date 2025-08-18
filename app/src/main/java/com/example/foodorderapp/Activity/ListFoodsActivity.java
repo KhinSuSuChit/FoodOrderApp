@@ -5,7 +5,6 @@ import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -73,7 +72,7 @@ public class ListFoodsActivity extends BaseActivity {
                     for(DataSnapshot issue: snapshot.getChildren()){
                         list.add(issue.getValue(Foods.class));
                     }
-                    if(list.size()>0){
+                    if(!list.isEmpty()){
                         binding.foodListView.setLayoutManager(new GridLayoutManager(ListFoodsActivity.this, 2));
                         adapterListFood = new FoodListAdapter(ListFoodsActivity.this,list);
                         binding.foodListView.setAdapter(adapterListFood);
