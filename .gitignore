@@ -24,3 +24,11 @@ gsjson.b64
 **/build/
 /app/google-services.json
 *.apk
+
+/.idea/
+*.iml
+/local.properties
+/build/
+**/build/
+/app/google-services.json
+*.apk
