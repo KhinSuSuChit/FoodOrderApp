@@ -16,3 +16,11 @@ local.properties
 app/google-services.json
 gsjson.b64
 
+
+/.idea/
+*.iml
+/local.properties
+/build/
+**/build/
+/app/google-services.json
+*.apk
