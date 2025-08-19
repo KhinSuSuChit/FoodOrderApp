@@ -183,13 +183,14 @@
                     />
 
                 <TextView
-                    android:id="@+id/textView8"
+                    android:id="@+id/signupText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Sign up"
                     android:textColor="@color/red"
                     android:textSize="16sp"/>
             </LinearLayout>
+
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

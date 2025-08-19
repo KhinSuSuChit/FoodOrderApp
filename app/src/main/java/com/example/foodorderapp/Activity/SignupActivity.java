@@ -36,7 +36,6 @@ public class SignupActivity extends BaseActivity {
             return insets;
         });
         setVariable();
-        
 
     }
 
@@ -58,6 +57,11 @@ public class SignupActivity extends BaseActivity {
                     Toast.makeText(SignupActivity.this, "Authentication Failed", Toast.LENGTH_SHORT).show();
                 }
             });
+        });
+
+        binding.loginTxt.setOnClickListener(v -> {
+            Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
+            startActivity(intent);
         });
     }
 }
