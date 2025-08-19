@@ -1,22 +1,28 @@
 package com.example.foodorderapp.Activity;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Patterns;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.foodorderapp.R;
 import com.example.foodorderapp.databinding.ActivityLoginBinding;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 
 public class LoginActivity extends BaseActivity {
 
@@ -43,26 +49,146 @@ public class LoginActivity extends BaseActivity {
             String email = binding.userEdt.getText().toString();
             String password = binding.passwordEdt.getText().toString();
 
-            if(!email.isEmpty() && !password.isEmpty()){
-                mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(LoginActivity.this, task -> {
-                    if(task.isSuccessful()){
+            if (!email.isEmpty() && !password.isEmpty()) {
+                mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(LoginActivity.this, task -> {
+                    if (task.isSuccessful()) {
                         startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                    }else{
+                    } else {
                         Toast.makeText(LoginActivity.this, "Authentication failed", Toast.LENGTH_SHORT).show();
                     }
                 });
-            }else{
+            } else {
                 Toast.makeText(LoginActivity.this, "Please fill username and password", Toast.LENGTH_SHORT).show();
             }
         });
+        binding.signupText.setOnClickListener(v -> {
+            Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
+            startActivity(intent);
+        });
+        binding.forgotTxt.setOnClickListener(v -> {
+            String prefill = binding.userEdt.getText().toString().trim();
+            showResetDialog(prefill);
+        });
+    }
 
-        binding.signupText.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
-                startActivity(intent);
-            }
+    private void showResetDialog(String prefill) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this, R.style.AlertDialogTheme);
+        View view = LayoutInflater.from(this).inflate(R.layout.layout_forgot_password_dialog, null);
+        EditText textEdit = view.findViewById(R.id.textEdit);
+        if (!TextUtils.isEmpty(prefill)) textEdit.setText(prefill);
+
+        builder.setView(view);
+        ((TextView) view.findViewById(R.id.textTitle)).setText(getResources().getString(R.string.forgot_pass_title));
+        ((TextView) view.findViewById(R.id.textMessage)).setText(getResources().getString(R.string.forgot_pass_message));
+        ((Button) view.findViewById(R.id.buttonYes)).setText(getResources().getString(R.string.send));
+        ((Button) view.findViewById(R.id.buttonNo)).setText(getResources().getString(R.string.cancel));
+        ((ImageView) view.findViewById(R.id.imageIcon)).setImageResource(R.drawable.ic_password_reset);
+
+        final AlertDialog alertDialog = builder.create();
+
+        view.findViewById(R.id.buttonYes).setOnClickListener(v -> {
+            String email = textEdit.getText().toString().trim();
+            sendResetEmail(email);
+            alertDialog.dismiss();
+            //Toast.makeText(LoginActivity.this, "Yes", Toast.LENGTH_SHORT).show();
         });
 
+        view.findViewById(R.id.buttonNo).setOnClickListener(v -> alertDialog.dismiss());
+
+        if (alertDialog.getWindow() != null) {
+            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+            alertDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+            alertDialog.getWindow().setDimAmount(0.85f);
+        }
+
+        if (!isFinishing() && !isDestroyed()) {
+            runOnUiThread(alertDialog::show);
+        }
+    }
+
+    private void sendResetEmail(String email) {
+        if (TextUtils.isEmpty(email)) {
+            showErrorDialog("Email is required");
+            return;
+        }
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            showErrorDialog("Enter a valid email");
+            return;
+        }
+
+        setUiEnabled(false);
+
+        mAuth.sendPasswordResetEmail(email)
+                .addOnCompleteListener(task -> {
+                    setUiEnabled(true);
+                    if (task.isSuccessful()) {
+                        showSuccessDialog();
+                    } else {
+                        String msg = (task.getException() != null)
+                                ? task.getException().getMessage()
+                                : "Failed to send reset email";
+                        showErrorDialog(msg);
+                    }
+                });
+    }
+
+    private void setUiEnabled(boolean enabled) {
+        binding.loginBtn.setEnabled(enabled);
+        binding.signupText.setEnabled(enabled);
+        binding.forgotTxt.setEnabled(enabled);
+        binding.userEdt.setEnabled(enabled);
+        binding.passwordEdt.setEnabled(enabled);
+    }
+
+    private void showSuccessDialog() {
+        AlertDialog.Builder builder = new AlertDialog.
+                Builder(LoginActivity.this, R.style.AlertDialogTheme);
+        View view = LayoutInflater.from(this).inflate(R.layout.layout_success_dialog, null);
+
+        builder.setView(view);
+        ((TextView) view.findViewById(R.id.textTitle)).setText(getResources().getString(R.string.success_title));
+        ((TextView) view.findViewById(R.id.textMessage)).setText(getResources().getString(R.string.success_message));
+        ((Button) view.findViewById(R.id.buttonAction)).setText(getResources().getString(R.string.okay));
+        ((ImageView) view.findViewById(R.id.imageIcon)).setImageResource(R.drawable.ic_success);
+
+        final AlertDialog alertDialog = builder.create();
+        view.findViewById(R.id.buttonAction).setOnClickListener(v -> alertDialog.dismiss());
+        if (alertDialog.getWindow() != null) {
+            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+            alertDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+            alertDialog.getWindow().setDimAmount(0.85f);
+        }
+
+        if (!isFinishing() && !isDestroyed()) {
+            runOnUiThread(alertDialog::show);
+        }
+    }
+
+    private void showErrorDialog(String msg) {
+        AlertDialog.Builder builder = new AlertDialog.
+                Builder(LoginActivity.this, R.style.AlertDialogTheme);
+
+        View view = LayoutInflater.from(this).inflate(R.layout.layout_error_dialog, null);
+        builder.setView(view);
+        ((TextView) view.findViewById(R.id.textTitle)).setText(getResources().getString(R.string.error_title));
+        ((TextView) view.findViewById(R.id.textMessage)).setText(msg);
+        ((Button) view.findViewById(R.id.buttonAction)).setText(getResources().getString(R.string.try_again));
+        ((ImageView) view.findViewById(R.id.imageIcon)).setImageResource(R.drawable.ic_error);
+
+        final AlertDialog alertDialog = builder.create();
+
+        view.findViewById(R.id.buttonAction).setOnClickListener(v -> alertDialog.dismiss());
+
+        if (alertDialog.getWindow() != null) {
+            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+            alertDialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+            alertDialog.getWindow().setDimAmount(0.85f);
+        }
+        if (!isFinishing() && !isDestroyed()) {
+            runOnUiThread(alertDialog::show);
+        }
     }
 }
