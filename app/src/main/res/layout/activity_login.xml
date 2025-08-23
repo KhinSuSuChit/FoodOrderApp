@@ -16,6 +16,8 @@
             android:layout_height="wrap_content"
             android:orientation="vertical" >
 
+
+            <!-- Logo -->
             <ImageView
                 android:id="@+id/imageView4"
                 android:layout_width="match_parent"
@@ -23,6 +25,7 @@
                 android:layout_marginTop="48dp"
                 app:srcCompat="@drawable/logo" />
 
+            <!-- Logo Caption -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -49,6 +52,7 @@
                     android:textSize="45sp"/>
             </LinearLayout>
 
+            <!-- Email Address TextEdit -->
             <EditText
                 android:id="@+id/userEdt"
                 android:layout_width="match_parent"
@@ -64,7 +68,7 @@
                 android:background="@drawable/edittext_background"
                 android:inputType="text"
                 />
-
+            <!-- Password TextEdit -->
             <EditText
                 android:id="@+id/passwordEdt"
                 android:layout_width="match_parent"
@@ -81,6 +85,7 @@
                 android:inputType="textPassword"
                 />
 
+            <!-- Forgot Password Text -->
             <TextView
                 android:id="@+id/forgotTxt"
                 android:layout_width="match_parent"
@@ -90,6 +95,7 @@
                 android:textAlignment="center"
                 android:textSize="16sp" />
 
+            <!-- Login Button -->
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/loginBtn"
                 android:layout_width="match_parent"
@@ -103,6 +109,7 @@
                 android:textStyle="bold"
                 />
 
+            <!-- OR -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -136,37 +143,45 @@
 
             </LinearLayout>
 
+            <!-- Social Media Authentication -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_margin="32dp"
+                android:layout_margin="16dp"
+                android:gravity="center"
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:id="@+id/facebook"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    app:srcCompat="@drawable/facebook"
-                    />
+                    android:id="@+id/btnGoogle"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    app:srcCompat="@drawable/ic_google"
+                    android:layout_marginStart="25dp"
+                    android:layout_marginEnd="25dp"/>
 
                 <ImageView
-                    android:id="@+id/google"
+                    android:id="@+id/btnFacebook"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    app:srcCompat="@drawable/google" />
+                    android:padding="10dp"
+                    android:background="@drawable/bg_social_circle"
+                    app:srcCompat="@drawable/ic_facebook"
+                    android:layout_marginStart="25dp"
+                    android:layout_marginEnd="25dp"/>
 
                 <ImageView
-                    android:id="@+id/twitter"
+                    android:id="@+id/btnTwitter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    app:srcCompat="@drawable/twitter" />
+                    android:padding="14dp"
+                    android:background="@drawable/bg_social_circle"
+                    app:srcCompat="@drawable/ic_x"
+                    android:layout_marginStart="25dp"
+                    android:layout_marginEnd="25dp"/>
 
             </LinearLayout>
 
+            <!-- You aren't a user? Sign up -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

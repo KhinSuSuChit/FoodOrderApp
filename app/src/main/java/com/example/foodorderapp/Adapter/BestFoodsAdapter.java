@@ -14,8 +14,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.example.foodorderapp.Activity.CartActivity;
 import com.example.foodorderapp.Activity.DetailActivity;
 import com.example.foodorderapp.Domain.Foods;
+import com.example.foodorderapp.Helper.ManagmentCart;
 import com.example.foodorderapp.R;
 
 import java.util.ArrayList;
@@ -54,6 +56,14 @@ public class BestFoodsAdapter extends RecyclerView.Adapter<BestFoodsAdapter.view
             intent.putExtra("object", items.get(position));
             context.startActivity(intent);
         });
+
+        holder.plusTxt.setOnClickListener(v -> {
+            Intent intent = new Intent(context, CartActivity.class);
+            Foods item = items.get(position);
+            item.setNumberInCart(1);
+            new ManagmentCart(context).insertFood(item);
+            context.startActivity(intent);
+        });
     }
 
     @Override
@@ -62,7 +72,7 @@ public class BestFoodsAdapter extends RecyclerView.Adapter<BestFoodsAdapter.view
     }
 
     public class viewholder extends RecyclerView.ViewHolder {
-        TextView titleTxt, priceTxt, starTxt, timeTxt;
+        TextView titleTxt, priceTxt, starTxt, timeTxt, plusTxt;
         ImageView pic;
         public viewholder(@NonNull View itemView) {
             super(itemView);
@@ -71,6 +81,7 @@ public class BestFoodsAdapter extends RecyclerView.Adapter<BestFoodsAdapter.view
             starTxt = itemView.findViewById(R.id.starTxt);
             timeTxt = itemView.findViewById(R.id.timeTxt);
             pic = itemView.findViewById(R.id.pic);
+            plusTxt = itemView.findViewById(R.id.addToCartFromBestFood);
 
         }
     }
