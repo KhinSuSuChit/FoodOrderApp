@@ -38,7 +38,7 @@
                     android:id="@+id/titleTxt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="title"
+                    android:text=""
                     android:textColor="@color/blue_grey"
                     android:textSize="24sp"
                     android:textStyle="bold"
