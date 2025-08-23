@@ -16,7 +16,6 @@ public class BaseActivity extends AppCompatActivity {
 
     FirebaseAuth mAuth;
     FirebaseDatabase database;
-    public String TAG = "riley";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
