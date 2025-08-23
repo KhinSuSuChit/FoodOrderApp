@@ -24,8 +24,8 @@ import com.example.foodorderapp.Domain.Price;
 import com.example.foodorderapp.Domain.Time;
 import com.example.foodorderapp.R;
 import com.example.foodorderapp.databinding.ActivityMainBinding;
-import com.google.firebase.Firebase;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -59,12 +59,17 @@ public class MainActivity extends BaseActivity {
     }
 
     private void setVariable() {
-        binding.logoutBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FirebaseAuth.getInstance().signOut();
-                startActivity(new Intent(MainActivity.this,LoginActivity.class));
-            }
+
+        FirebaseUser user = mAuth.getCurrentUser();
+        String email = user.getEmail();
+        if (email != null) {
+            String username = email.substring(0, email.indexOf("@"));
+            binding.userName.setText(username);
+        }
+
+        binding.logoutBtn.setOnClickListener(v -> {
+            FirebaseAuth.getInstance().signOut();
+            startActivity(new Intent(MainActivity.this,LoginActivity.class));
         });
 
         binding.searchBtn.setOnClickListener(v -> {

@@ -36,13 +36,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.FirebaseDatabase;
 
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.login.LoginManager;
-import com.facebook.login.LoginResult;
-import com.google.firebase.auth.FacebookAuthProvider;
-
 
 public class LoginActivity extends BaseActivity {
 
@@ -50,8 +43,6 @@ public class LoginActivity extends BaseActivity {
     FirebaseDatabase firebaseDatabase;
     ProgressDialog progressDialog;
     GoogleSignInClient mGoogleSignInClient;
-
-    private CallbackManager fbCallbackManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,13 +63,10 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void initFacebookLogin() {
-        binding.btnFacebook.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(LoginActivity.this, FacebookAuthActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                startActivity(intent);
-            }
+        binding.btnFacebook.setOnClickListener(v -> {
+            Intent intent = new Intent(LoginActivity.this, FacebookAuthActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+            startActivity(intent);
         });
     }
 
@@ -143,7 +131,6 @@ public class LoginActivity extends BaseActivity {
                         startActivity(intent);
                         Toast.makeText(LoginActivity.this, "Sign in with Google", Toast.LENGTH_SHORT).show();
                     } else {
-                        //Log.w("TAG", "signInWithCredential:failure", task.getException());
                         showErrorDialog("signInWithCredential:failure");
                     }
                 });
