@@ -61,7 +61,10 @@ public class MainActivity extends BaseActivity {
     private void setVariable() {
 
         FirebaseUser user = mAuth.getCurrentUser();
-        String email = user.getEmail();
+        String email = null;
+        if (user != null) {
+            email = user.getEmail();
+        }
         if (email != null) {
             String username = email.substring(0, email.indexOf("@"));
             binding.userName.setText(username);
@@ -73,12 +76,9 @@ public class MainActivity extends BaseActivity {
         });
 
         binding.searchBtn.setOnClickListener(v -> {
-            String text = binding.searchEdit.getText().toString();
-            if(!text.isEmpty()){
-                Intent intent = new Intent(MainActivity.this, ListFoodsActivity.class);
-                intent.putExtra("text", text);
-                intent.putExtra("isSearch",true);
-                startActivity(intent);
+            String text = binding.searchEdit.getText().toString().trim();
+            if (!text.isEmpty()) {
+                routeSearch(text);
             }
         });
 
@@ -91,6 +91,81 @@ public class MainActivity extends BaseActivity {
             startActivity(intent);
         });
     }
+
+    private void routeSearch(String query) {
+        final String q = query.toLowerCase();
+
+        DatabaseReference root     = database.getReference();
+        DatabaseReference catRef   = root.child("Category");
+        DatabaseReference foodsRef = root.child("Foods");
+
+        // 1) Try category name match
+        catRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Integer matchedCatId = null;
+                String matchedCatName = null;
+
+                for (DataSnapshot d : snapshot.getChildren()) {
+                    Integer id = d.child("Id").getValue(Integer.class);
+                    String name = d.child("Name").getValue(String.class);
+                    if (id != null && name != null && name.toLowerCase().contains(q)) {
+                        matchedCatId = id; matchedCatName = name;
+                        break;
+                    }
+                }
+
+                if (matchedCatId != null) {
+                    Intent i = new Intent(MainActivity.this, ListFoodsActivity.class);
+                    i.putExtra("CategoryId", matchedCatId);
+                    i.putExtra("CategoryName", matchedCatName);
+                    i.putExtra("isSearch", false);
+                    startActivity(i);
+                    overridePendingTransition(0, 0);
+                } else {
+                    // 2) No category hit -> check if any title contains query
+                    foodsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override public void onDataChange(@NonNull DataSnapshot snap) {
+                            boolean hasAny = false;
+                            for (DataSnapshot s : snap.getChildren()) {
+                                Foods f = s.getValue(Foods.class);
+                                String title = (f != null) ? f.getTitle() : null;
+                                if (title != null && title.toLowerCase().contains(q)) {
+                                    hasAny = true; break;
+                                }
+                            }
+
+                            if (hasAny) {
+                                Intent i = new Intent(MainActivity.this, ListFoodsActivity.class);
+                                i.putExtra("isSearch", true);
+                                i.putExtra("text", query);
+                                startActivity(i);
+                                overridePendingTransition(0, 0);
+                            } else {
+                                Intent nf = new Intent(MainActivity.this, NotFoundActivity.class);
+                                nf.putExtra("query", query);
+                                startActivity(nf);
+                                overridePendingTransition(0, 0);
+                            }
+                        }
+                        @Override public void onCancelled(@NonNull DatabaseError error) {
+                            Intent nf = new Intent(MainActivity.this, NotFoundActivity.class);
+                            nf.putExtra("query", query);
+                            startActivity(nf);
+                            overridePendingTransition(0, 0);
+                        }
+                    });
+                }
+            }
+            @Override public void onCancelled(@NonNull DatabaseError error) {
+                Intent nf = new Intent(MainActivity.this, NotFoundActivity.class);
+                nf.putExtra("query", query);
+                startActivity(nf);
+                overridePendingTransition(0, 0);
+            }
+        });
+    }
+
+
 
     private void initBestFood() {
         DatabaseReference myRef = database.getReference("Foods");

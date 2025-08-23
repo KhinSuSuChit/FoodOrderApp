@@ -1,7 +1,6 @@
 package com.example.foodorderapp.Activity;
 
 import android.os.Bundle;
-import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -51,96 +50,44 @@ public class ListFoodsActivity extends BaseActivity {
 
     }
 
+
     private void initList() {
         DatabaseReference foodsRef = database.getReference("Foods");
-        binding.progressBar.setVisibility(View.VISIBLE);
+        binding.progressBar.setVisibility(android.view.View.VISIBLE);
+        ArrayList<Foods> list = new ArrayList<>();
 
-        // SEARCH PATH: first try to match category name, else title-contains
+        // SEARCH: client-side contains (case-insensitive), no redirects here
         if (Boolean.TRUE.equals(isSearch) && searchText != null && !searchText.trim().isEmpty()) {
             final String q = searchText.trim().toLowerCase();
-
-            // 1) Load categories to find a matching category name (substring, case-insensitive)
-            database.getReference("Category").addListenerForSingleValueEvent(new ValueEventListener() {
+            foodsRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    Integer matchedCatId = null;
-                    String matchedCatName = null;
-
+                    list.clear();
                     for (DataSnapshot d : snapshot.getChildren()) {
-                        Integer id = d.child("Id").getValue(Integer.class);
-                        String name = d.child("Name").getValue(String.class);
-                        if (id != null && name != null && name.toLowerCase().contains(q)) {
-                            matchedCatId = id;
-                            matchedCatName = name;
-                            break;
+                        Foods f = d.getValue(Foods.class);
+                        if (f != null && f.getTitle() != null &&
+                                f.getTitle().toLowerCase().contains(q)) {
+                            list.add(f);
                         }
                     }
-
-                    if (matchedCatId != null) {
-                        // 2) Category name matched -> show all foods in that category
-                        binding.titleTxt.setText(matchedCatName);
-                        Query byCategory = foodsRef.orderByChild("CategoryId").equalTo(matchedCatId);
-                        loadFoods(byCategory);
-                    } else {
-                        // 3) No category match -> fetch all foods and filter by title contains
-                        foodsRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                ArrayList<Foods> list = new ArrayList<>();
-                                for (DataSnapshot d : snapshot.getChildren()) {
-                                    Foods f = d.getValue(Foods.class);
-                                    if (f == null) continue;
-                                    String title = f.getTitle();
-                                    if (title != null && title.toLowerCase().contains(q)) {
-                                        list.add(f);
-                                    }
-                                }
-                                String searchResultTitle = getString(R.string.search_result_for) + " " + searchText;
-                                binding.titleTxt.setText(searchResultTitle);
-                                showList(list);
-                            }
-
-                            @Override public void onCancelled(@NonNull DatabaseError error) {
-                                binding.progressBar.setVisibility(View.GONE);
-                            }
-                        });
-                    }
+                    String searchTitle = "search result for " + searchText;
+                    binding.titleTxt.setText(searchTitle);
+                    showList(list);
                 }
                 @Override public void onCancelled(@NonNull DatabaseError error) {
-                    binding.progressBar.setVisibility(View.GONE);
+                    binding.progressBar.setVisibility(android.view.View.GONE);
                 }
             });
             return;
         }
 
-        // NON-SEARCH PATHS (unchanged behavior)
-        ArrayList<Foods> list = new ArrayList<>();
-        Query query;
-        if (Boolean.TRUE.equals(isBest)) {
-            query = foodsRef.orderByChild("BestFood").equalTo(true);
-            binding.titleTxt.setText(getString(R.string.best_foods));
-        } else {
-            query = foodsRef.orderByChild("CategoryId").equalTo(categoryId);
-            if (categoryName != null) binding.titleTxt.setText(categoryName);
-        }
+        // BEST or CATEGORY
+        Query query = Boolean.TRUE.equals(isBest)
+                ? foodsRef.orderByChild("BestFood").equalTo(true)
+                : foodsRef.orderByChild("CategoryId").equalTo(categoryId);
 
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override public void onDataChange(@NonNull DataSnapshot snapshot) {
                 list.clear();
-                for (DataSnapshot issue : snapshot.getChildren()) {
-                    Foods f = issue.getValue(Foods.class);
-                    if (f != null) list.add(f);
-                }
-                showList(list);
-            }
-            @Override public void onCancelled(@NonNull DatabaseError error) {
-                binding.progressBar.setVisibility(View.GONE);
-            }
-        });
-    }
-
-    private void loadFoods(Query query) {
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override public void onDataChange(@NonNull DataSnapshot snapshot) {
-                ArrayList<Foods> list = new ArrayList<>();
                 for (DataSnapshot d : snapshot.getChildren()) {
                     Foods f = d.getValue(Foods.class);
                     if (f != null) list.add(f);
@@ -148,7 +95,7 @@ public class ListFoodsActivity extends BaseActivity {
                 showList(list);
             }
             @Override public void onCancelled(@NonNull DatabaseError error) {
-                binding.progressBar.setVisibility(View.GONE);
+                binding.progressBar.setVisibility(android.view.View.GONE);
             }
         });
     }
@@ -159,11 +106,7 @@ public class ListFoodsActivity extends BaseActivity {
         }
         adapterListFood = new FoodListAdapter(this, list);
         binding.foodListView.setAdapter(adapterListFood);
-
-        // Optional: empty state
-        // binding.emptyTxt.setVisibility(list.isEmpty() ? View.VISIBLE : View.GONE);
-
-        binding.progressBar.setVisibility(View.GONE);
+        binding.progressBar.setVisibility(android.view.View.GONE);
     }
 
     private void getIntentExtra() {
@@ -175,6 +118,8 @@ public class ListFoodsActivity extends BaseActivity {
 
         if (!Boolean.TRUE.equals(isSearch) && categoryName != null) {
             binding.titleTxt.setText(categoryName);
+        } else if (Boolean.TRUE.equals(isBest)) {
+            binding.titleTxt.setText(getString(R.string.best_foods));
         }
         binding.backBtn.setOnClickListener(v -> finish());
     }
