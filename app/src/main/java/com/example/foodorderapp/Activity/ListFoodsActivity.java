@@ -31,6 +31,7 @@ public class ListFoodsActivity extends BaseActivity {
     private String categoryName;
     private String searchText;
     private Boolean isSearch;
+    private Boolean isBest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,13 +52,14 @@ public class ListFoodsActivity extends BaseActivity {
     }
 
     private void initList() {
-
         DatabaseReference myRef = database.getReference("Foods");
         binding.progressBar.setVisibility(View.VISIBLE);
         ArrayList<Foods> list = new ArrayList<>();
         Query query;
         if(isSearch){
             query = myRef.orderByChild("Title").startAt(searchText).endAt(searchText + "\uf8ff");
+        } else if (Boolean.TRUE.equals(isBest)) {
+            query = myRef.orderByChild("BestFood").equalTo(true);
         }else{
             query = myRef.orderByChild("CategoryId").equalTo(categoryId);
         }
@@ -76,7 +78,6 @@ public class ListFoodsActivity extends BaseActivity {
                     binding.progressBar.setVisibility(View.GONE);
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
@@ -89,6 +90,7 @@ public class ListFoodsActivity extends BaseActivity {
         categoryName = getIntent().getStringExtra("CategoryName");
         searchText = getIntent().getStringExtra("text");
         isSearch = getIntent().getBooleanExtra("isSearch", false);
+        isBest = getIntent().getBooleanExtra("isBest", false);
 
         binding.titleTxt.setText(categoryName);
         binding.backBtn.setOnClickListener(view -> finish());
