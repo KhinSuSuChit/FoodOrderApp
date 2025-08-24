@@ -23,7 +23,7 @@ public class DetailActivity extends BaseActivity {
     private Foods object;
     private int num = 1;
     private ManagmentCart managmentCart;
-
+    boolean isFav = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,6 +77,17 @@ public class DetailActivity extends BaseActivity {
         binding.addBtn.setOnClickListener(v -> {
             object.setNumberInCart(num);
             managmentCart.insertFood(object);
+        });
+
+        binding.favBtn.setOnClickListener(v -> {
+            if(!isFav){
+                binding.favBtn.setImageResource(R.drawable.favorite_white_fill);
+                isFav = true;
+            }
+            else{
+                binding.favBtn.setImageResource(R.drawable.favorite_white);
+                isFav = false;
+            }
         });
     }
 
