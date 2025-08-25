@@ -20,6 +20,7 @@ import com.example.foodorderapp.Domain.Foods;
 import com.example.foodorderapp.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class FoodListAdapter extends RecyclerView.Adapter<FoodListAdapter.viewholder> {
 
@@ -28,8 +29,15 @@ public class FoodListAdapter extends RecyclerView.Adapter<FoodListAdapter.viewho
 
     public FoodListAdapter(Context context, ArrayList<Foods> items) {
         this.context = context;
-        this.items = items;
+        this.items = (items != null) ? new ArrayList<>(items) : new ArrayList<>();
     }
+
+    public void setItems(List<Foods> newItems) {
+        this.items.clear();
+        if (newItems != null) this.items.addAll(newItems);
+        notifyDataSetChanged();
+    }
+
 
     @NonNull
     @Override

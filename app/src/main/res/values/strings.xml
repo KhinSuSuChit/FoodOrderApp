@@ -13,14 +13,19 @@
     <string name="default_web_client_id">9614168639-4giquarp1fkahlusc765g9m0kmr018re.apps.googleusercontent.com</string>
     <string name="facebook_app_id">746595454416033</string>
     <string name="fb_login_protocol_scheme">fb746595454416033</string>
+
     <string name="best_foods">Today\'s Best Foods\n</string>
-    <string name="search_result_for">Results for - </string>
 
-
-    <string name="no_results_title">No results found</string>
-    <string name="no_results_subtitle">We couldn’t find anything for “%1$s”. Try a different word or a category.</string>
-    <string name="go_back">Go Back</string>
-    <string name="see_suggestions">See suggestions</string>
     <string name="my_favorites">Favorites</string>
+
+    <string name="no_search_results_title">No search results</string>
+    <string name="no_search_results_subtitle">We couldn’t find anything for \"%1$s\".\nTry a different word or a category.</string>
+    <string name="no_favorites_title">No favorites yet</string>
+    <string name="no_favorites_subtitle">You haven’t added anything to favorites.</string>
+    <string name="no_best_title">No best foods</string>
+    <string name="no_best_subtitle">Currently no best foods are available.</string>
+    <string name="no_items_title">No items found</string>
+    <string name="no_items_subtitle">No items in \"%1$s\".</string>
+
 
 </resources>

@@ -101,9 +101,8 @@ public class MainActivity extends BaseActivity {
     private void routeSearch(String query) {
         final String q = query.toLowerCase();
 
-        DatabaseReference root     = database.getReference();
-        DatabaseReference catRef   = root.child("Category");
-        DatabaseReference foodsRef = root.child("Foods");
+        DatabaseReference root   = database.getReference();
+        DatabaseReference catRef = root.child("Category");
 
         // 1) Try category name match
         catRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -121,6 +120,7 @@ public class MainActivity extends BaseActivity {
                 }
 
                 if (matchedCatId != null) {
+                    // Category hit → open category list
                     Intent i = new Intent(MainActivity.this, ListFoodsActivity.class);
                     i.putExtra("CategoryId", matchedCatId);
                     i.putExtra("CategoryName", matchedCatName);
@@ -128,49 +128,25 @@ public class MainActivity extends BaseActivity {
                     startActivity(i);
                     overridePendingTransition(0, 0);
                 } else {
-                    // 2) No category hit -> check if any title contains query
-                    foodsRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override public void onDataChange(@NonNull DataSnapshot snap) {
-                            boolean hasAny = false;
-                            for (DataSnapshot s : snap.getChildren()) {
-                                Foods f = s.getValue(Foods.class);
-                                String title = (f != null) ? f.getTitle() : null;
-                                if (title != null && title.toLowerCase().contains(q)) {
-                                    hasAny = true; break;
-                                }
-                            }
-
-                            if (hasAny) {
-                                Intent i = new Intent(MainActivity.this, ListFoodsActivity.class);
-                                i.putExtra("isSearch", true);
-                                i.putExtra("text", query);
-                                startActivity(i);
-                                overridePendingTransition(0, 0);
-                            } else {
-                                Intent nf = new Intent(MainActivity.this, NotFoundActivity.class);
-                                nf.putExtra("query", query);
-                                startActivity(nf);
-                                overridePendingTransition(0, 0);
-                            }
-                        }
-                        @Override public void onCancelled(@NonNull DatabaseError error) {
-                            Intent nf = new Intent(MainActivity.this, NotFoundActivity.class);
-                            nf.putExtra("query", query);
-                            startActivity(nf);
-                            overridePendingTransition(0, 0);
-                        }
-                    });
+                    // No category hit → open search list (ListFoodsActivity handles empty state)
+                    Intent i = new Intent(MainActivity.this, ListFoodsActivity.class);
+                    i.putExtra("isSearch", true);
+                    i.putExtra("text", query);
+                    startActivity(i);
+                    overridePendingTransition(0, 0);
                 }
             }
+
             @Override public void onCancelled(@NonNull DatabaseError error) {
-                Intent nf = new Intent(MainActivity.this, NotFoundActivity.class);
-                nf.putExtra("query", query);
-                startActivity(nf);
+                // On error, still open search list; ListFoodsActivity shows empty state if needed
+                Intent i = new Intent(MainActivity.this, ListFoodsActivity.class);
+                i.putExtra("isSearch", true);
+                i.putExtra("text", query);
+                startActivity(i);
                 overridePendingTransition(0, 0);
             }
         });
     }
-
 
 
     private void initBestFood() {

@@ -1,6 +1,7 @@
 package com.example.foodorderapp.Activity;
 
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -96,12 +97,12 @@ public class ListFoodsActivity extends BaseActivity {
                             list.add(f);
                         }
                     }
-                    String searchTitle = "search result for " + searchText;
-                    binding.titleTxt.setText(searchTitle);
+                    binding.titleTxt.setText(q);
                     showList(list);
                 }
                 @Override public void onCancelled(@NonNull DatabaseError error) {
-                    binding.progressBar.setVisibility(android.view.View.GONE);
+                    binding.progressBar.setVisibility(View.GONE);
+                    showList(new ArrayList<>());
                 }
             });
             return;
@@ -122,18 +123,52 @@ public class ListFoodsActivity extends BaseActivity {
                 showList(list);
             }
             @Override public void onCancelled(@NonNull DatabaseError error) {
-                binding.progressBar.setVisibility(android.view.View.GONE);
+                binding.progressBar.setVisibility(View.GONE);
+                showList(new ArrayList<>());
             }
         });
     }
 
     private void showList(ArrayList<Foods> list) {
+        binding.progressBar.setVisibility(View.GONE);
+
+        if (list == null || list.isEmpty()) {
+            // Hide scroll content (toolbar can stay if it's outside ScrollView)
+            binding.foodListView.setVisibility(View.GONE);
+            binding.emptyState.setVisibility(View.VISIBLE);
+
+            // Dynamic empty-state copy
+            if (Boolean.TRUE.equals(isSearch)) {
+                String q = (searchText == null) ? "" : searchText;
+                binding.emptyTitle.setText(getString(R.string.no_search_results_title));
+                binding.emptySubtitle.setText(getString(R.string.no_search_results_subtitle, q));
+            } else if (Boolean.TRUE.equals(isFavorites)) {
+                binding.emptyTitle.setText(getString(R.string.no_favorites_title));
+                binding.emptySubtitle.setText(getString(R.string.no_favorites_subtitle));
+            } else if (Boolean.TRUE.equals(isBest)) {
+                binding.emptyTitle.setText(getString(R.string.no_best_title));
+                binding.emptySubtitle.setText(getString(R.string.no_best_subtitle));
+            } else {
+                String cat = (categoryName == null) ? "" : categoryName;
+                binding.emptyTitle.setText(getString(R.string.no_items_title));
+                binding.emptySubtitle.setText(getString(R.string.no_items_subtitle, cat));
+            }
+            return;
+        }
+
+        binding.emptyState.setVisibility(View.GONE);
+        binding.foodListView.setVisibility(View.VISIBLE);
+
         if (binding.foodListView.getLayoutManager() == null) {
             binding.foodListView.setLayoutManager(new GridLayoutManager(this, 2));
         }
-        adapterListFood = new FoodListAdapter(this, list);
-        binding.foodListView.setAdapter(adapterListFood);
-        binding.progressBar.setVisibility(android.view.View.GONE);
+
+        if (adapterListFood == null) {
+            adapterListFood = new FoodListAdapter(this, list);
+            binding.foodListView.setAdapter(adapterListFood);
+        } else {
+            ((FoodListAdapter) adapterListFood).setItems(list);
+        }
     }
 
     private void getIntentExtra() {
@@ -145,7 +180,7 @@ public class ListFoodsActivity extends BaseActivity {
         isFavorites  = getIntent().getBooleanExtra("isFavorites", false);
 
         if (Boolean.TRUE.equals(isFavorites)) {
-            binding.titleTxt.setText(getString(R.string.my_favorites)); // add this string in strings.xml
+            binding.titleTxt.setText(getString(R.string.my_favorites));
         } else if (!Boolean.TRUE.equals(isSearch) && categoryName != null) {
             binding.titleTxt.setText(categoryName);
         } else if (Boolean.TRUE.equals(isBest)) {
