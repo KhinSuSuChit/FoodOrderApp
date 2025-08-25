@@ -17,6 +17,7 @@ public class Foods implements Serializable {
     private int TimeValue;
     private String Title;
     private int numberInCart;
+    private int numberInFav;
 
     public Foods() {
     }
@@ -129,4 +130,8 @@ public class Foods implements Serializable {
     public void setTitle(String title) {
         Title = title;
     }
+
+    public int getNumberInFav() {return numberInFav; }
+
+    public void setNumberInFav(int numberInFav) { this.numberInFav = numberInFav; }
 }

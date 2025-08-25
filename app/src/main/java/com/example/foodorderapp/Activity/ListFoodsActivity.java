@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.foodorderapp.Adapter.FoodListAdapter;
 import com.example.foodorderapp.Domain.Foods;
+import com.example.foodorderapp.Helper.ManagementFavorite;
 import com.example.foodorderapp.R;
 import com.example.foodorderapp.databinding.ActivityListFoodsBinding;
 import com.google.firebase.database.DataSnapshot;
@@ -32,6 +33,9 @@ public class ListFoodsActivity extends BaseActivity {
     private Boolean isSearch;
     private Boolean isBest;
 
+    private Boolean isFavorites;
+    private ManagementFavorite managementFavorite;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,15 +49,38 @@ public class ListFoodsActivity extends BaseActivity {
             return insets;
         });
 
+        managementFavorite = new ManagementFavorite(this);
         getIntentExtra();
         initList();
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (Boolean.TRUE.equals(isFavorites)) {
+            initList();
+        }
+    }
+
 
     private void initList() {
-        DatabaseReference foodsRef = database.getReference("Foods");
+
         binding.progressBar.setVisibility(android.view.View.VISIBLE);
+
+        //Favorite Branch
+        if (Boolean.TRUE.equals(isFavorites)) {
+            ArrayList<Foods> favs = managementFavorite.getListFav();
+            if (favs == null || favs.isEmpty()) {
+                showList(new ArrayList<>());
+                return;
+            }
+            showList(favs);
+            return;
+        }
+
+
+        DatabaseReference foodsRef = database.getReference("Foods");
         ArrayList<Foods> list = new ArrayList<>();
 
         // SEARCH: client-side contains (case-insensitive), no redirects here
@@ -115,8 +142,11 @@ public class ListFoodsActivity extends BaseActivity {
         searchText   = getIntent().getStringExtra("text");
         isSearch     = getIntent().getBooleanExtra("isSearch", false);
         isBest       = getIntent().getBooleanExtra("isBest", false);
+        isFavorites  = getIntent().getBooleanExtra("isFavorites", false);
 
-        if (!Boolean.TRUE.equals(isSearch) && categoryName != null) {
+        if (Boolean.TRUE.equals(isFavorites)) {
+            binding.titleTxt.setText(getString(R.string.my_favorites)); // add this string in strings.xml
+        } else if (!Boolean.TRUE.equals(isSearch) && categoryName != null) {
             binding.titleTxt.setText(categoryName);
         } else if (Boolean.TRUE.equals(isBest)) {
             binding.titleTxt.setText(getString(R.string.best_foods));

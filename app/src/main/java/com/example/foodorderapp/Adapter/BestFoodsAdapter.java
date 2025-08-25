@@ -17,7 +17,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.foodorderapp.Activity.CartActivity;
 import com.example.foodorderapp.Activity.DetailActivity;
 import com.example.foodorderapp.Domain.Foods;
-import com.example.foodorderapp.Helper.ManagmentCart;
+import com.example.foodorderapp.Helper.ManagementCart;
 import com.example.foodorderapp.R;
 
 import java.util.ArrayList;
@@ -61,7 +61,7 @@ public class BestFoodsAdapter extends RecyclerView.Adapter<BestFoodsAdapter.view
             Intent intent = new Intent(context, CartActivity.class);
             Foods item = items.get(position);
             item.setNumberInCart(1);
-            new ManagmentCart(context).insertFood(item);
+            new ManagementCart(context).insertFood(item);
             context.startActivity(intent);
         });
     }

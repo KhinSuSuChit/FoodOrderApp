@@ -15,7 +15,7 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.foodorderapp.Domain.Foods;
 import com.example.foodorderapp.Helper.ChangeNumberItemsListener;
-import com.example.foodorderapp.Helper.ManagmentCart;
+import com.example.foodorderapp.Helper.ManagementCart;
 import com.example.foodorderapp.R;
 
 import java.util.ArrayList;
@@ -23,12 +23,12 @@ import java.util.ArrayList;
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.viewholder> {
 
     ArrayList<Foods> list;
-    private ManagmentCart managmentCart;
+    private ManagementCart managementCart;
     ChangeNumberItemsListener changeNumberItemsListener;
 
     public CartAdapter(ArrayList<Foods> list, Context context, ChangeNumberItemsListener changeNumberItemsListener) {
         this.list = list;
-        managmentCart = new ManagmentCart(context);
+        managementCart = new ManagementCart(context);
         this.changeNumberItemsListener = changeNumberItemsListener;
     }
 
@@ -52,12 +52,12 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.viewholder> {
                 .transform(new CenterCrop(),new RoundedCorners(30))
                 .into(holder.pic);
 
-        holder.plusItem.setOnClickListener(v -> managmentCart.plusNumberItem(list, position, () -> {
+        holder.plusItem.setOnClickListener(v -> managementCart.plusNumberItem(list, position, () -> {
             notifyDataSetChanged();;
             changeNumberItemsListener.change();
         }));
 
-        holder.minusItem.setOnClickListener(v -> managmentCart.minusNumberItem(list, position, () -> {
+        holder.minusItem.setOnClickListener(v -> managementCart.minusNumberItem(list, position, () -> {
             notifyDataSetChanged();
             changeNumberItemsListener.change();
         }));

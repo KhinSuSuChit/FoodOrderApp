@@ -90,6 +90,12 @@ public class MainActivity extends BaseActivity {
             intent.putExtra("CategoryName", "Today's Best Foods");
             startActivity(intent);
         });
+
+        binding.favBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, ListFoodsActivity.class);
+            intent.putExtra("isFavorites", true);
+            startActivity(intent);
+        });
     }
 
     private void routeSearch(String query) {

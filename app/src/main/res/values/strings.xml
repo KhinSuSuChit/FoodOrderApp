@@ -21,5 +21,6 @@
     <string name="no_results_subtitle">We couldn’t find anything for “%1$s”. Try a different word or a category.</string>
     <string name="go_back">Go Back</string>
     <string name="see_suggestions">See suggestions</string>
+    <string name="my_favorites">Favorites</string>
 
 </resources>

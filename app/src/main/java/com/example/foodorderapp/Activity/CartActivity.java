@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.View;
 
 import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -12,8 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.foodorderapp.Adapter.CartAdapter;
-import com.example.foodorderapp.Helper.ChangeNumberItemsListener;
-import com.example.foodorderapp.Helper.ManagmentCart;
+import com.example.foodorderapp.Helper.ManagementCart;
 import com.example.foodorderapp.R;
 import com.example.foodorderapp.databinding.ActivityCartBinding;
 
@@ -21,7 +19,7 @@ public class CartActivity extends BaseActivity {
 
     private ActivityCartBinding binding;
     private RecyclerView.Adapter adapter;
-    private ManagmentCart managmentCart;
+    private ManagementCart managementCart;
     private double tax;
 
     @Override
@@ -39,7 +37,7 @@ public class CartActivity extends BaseActivity {
             return insets;
         });
 
-        managmentCart = new ManagmentCart(this);
+        managementCart = new ManagementCart(this);
 
         setVariable();
         calculateCart();
@@ -47,7 +45,7 @@ public class CartActivity extends BaseActivity {
     }
 
     private void initList() {
-        if(managmentCart.getListCart().isEmpty()){
+        if(managementCart.getListCart().isEmpty()){
             binding.emptyTxt.setVisibility(View.VISIBLE);
             binding.scrollviewCart.setVisibility(View.GONE);
         }else{
@@ -57,7 +55,7 @@ public class CartActivity extends BaseActivity {
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         binding.cardView.setLayoutManager(linearLayoutManager);
-        adapter = new CartAdapter(managmentCart.getListCart(), this, () -> calculateCart());
+        adapter = new CartAdapter(managementCart.getListCart(), this, () -> calculateCart());
         binding.cardView.setAdapter(adapter);
     }
 
@@ -65,10 +63,10 @@ public class CartActivity extends BaseActivity {
         double percentTax = 0.02; //percent 2% tax
         double delivery = 10; //10$
 
-        tax = Math.round(managmentCart.getTotalFee()*percentTax*100.0) / 100;
+        tax = Math.round(managementCart.getTotalFee()*percentTax*100.0) / 100;
 
-        double total = Math.round((managmentCart.getTotalFee()+tax+delivery) * 100) / 100;
-        double itemTotal = Math.round(managmentCart.getTotalFee()*100) / 100;
+        double total = Math.round((managementCart.getTotalFee()+tax+delivery) * 100) / 100;
+        double itemTotal = Math.round(managementCart.getTotalFee()*100) / 100;
 
         binding.totalFeeTxt.setText("$"+ itemTotal);
         binding.taxTxt.setText("$" + tax);
@@ -77,7 +75,6 @@ public class CartActivity extends BaseActivity {
     }
 
     private void setVariable() {
-
         binding.backBtn.setOnClickListener(v -> finish());
     }
 }
